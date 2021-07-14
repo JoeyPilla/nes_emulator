@@ -23,6 +23,18 @@ impl CPU {
         self.program_counter = self.mem_read_u16(0xFFFC);
     }
 
+    pub fn load_and_run(&mut self, program: Vec<u8>) {
+        self.load(program);
+        self.reset();
+        self.run();
+    }
+
+    pub fn load(&mut self, program: Vec<u8>) {
+        self.memory[0x8000..(0x8000 + program.len())].copy_from_slice(&program[..]);
+        self.program_counter = 0x8000;
+        self.mem_write_u16(0xFFFC, 0x8000);
+    }
+
     pub fn run(&mut self) {
         let ref opcodes: HashMap<u8, &'static opcodes::Opcode> = *opcodes::OPCODE_MAP;
 

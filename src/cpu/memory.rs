@@ -19,16 +19,4 @@ impl CPU {
     pub(crate) fn mem_write(&mut self, addr: u16, data: u8) {
         self.memory[addr as usize] = data;
     }
-
-    pub fn load_and_run(&mut self, program: Vec<u8>) {
-        self.load(program);
-        self.reset();
-        self.run();
-    }
-
-    pub fn load(&mut self, program: Vec<u8>) {
-        self.memory[0x8000..(0x8000 + program.len())].copy_from_slice(&program[..]);
-        self.program_counter = 0x8000;
-        self.mem_write_u16(0xFFFC, 0x8000);
-    }
 }
