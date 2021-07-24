@@ -46,6 +46,7 @@ impl CPU {
             self.mem_read(ptr.wrapping_add(1) as u16),
         ])
     }
+
     fn indirect_register_y(&self) -> u16 {
         let base = self.mem_read(self.program_counter);
 

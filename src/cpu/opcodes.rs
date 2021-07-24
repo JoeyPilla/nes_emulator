@@ -31,6 +31,7 @@ lazy_static! {
         Opcode::new(0x39, "AND", 3, 4, AddressingMode::AbsoluteY),
         Opcode::new(0x21, "AND", 2, 6, AddressingMode::IndirectX),
         Opcode::new(0x31, "AND", 2, 5, AddressingMode::IndirectY),
+        Opcode::new(0x90, "BCC", 2, 2, AddressingMode::NoneAddressing),
         Opcode::new(0x00, "BRK", 1, 7, AddressingMode::NoneAddressing),
         Opcode::new(0xAA, "TAX", 1, 2, AddressingMode::NoneAddressing),
         Opcode::new(0xE8, "INX", 1, 2, AddressingMode::NoneAddressing),

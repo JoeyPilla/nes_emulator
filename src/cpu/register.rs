@@ -6,13 +6,13 @@ impl CPU {
         let addr = self.get_operand_address(mode);
         let value = self.mem_read(addr);
 
-        println!("{:#x} {:#x}", addr, value);
-
         self.register_a = self.register_a & value;
 
-        println!("{:#x} {:#x}", self.register_a, value);
-
         self.update_zero_and_negative_flags(self.register_a)
+    }
+
+    pub(crate) fn bcc(&mut self) {
+        self.branch(self.status & 0b0000_0010 == 0)
     }
 
     pub(crate) fn tax(&mut self) {
@@ -37,6 +37,18 @@ impl CPU {
         let (res, _overflow) = self.register_x.overflowing_add(1);
         self.register_x = res;
         self.update_zero_and_negative_flags(self.register_x)
+    }
+
+    pub(crate) fn branch(&mut self, condition: bool) {
+        if condition {
+            let jump: i8 = self.mem_read(self.program_counter) as i8;
+            let jump_addr = self
+                .program_counter
+                .wrapping_add(1)
+                .wrapping_add(jump as u16);
+
+            self.program_counter = jump_addr;
+        }
     }
 
     pub(crate) fn update_zero_and_negative_flags(&mut self, result: u8) {
@@ -164,6 +176,31 @@ mod test_and {
         cpu.run();
 
         assert_eq!(cpu.register_a, 0x55);
+    }
+}
+
+#[cfg(test)]
+mod test_bcc {
+    use super::*;
+
+    #[test]
+    fn bcc() {
+        let mut cpu = CPU::new();
+
+        cpu.load(vec![0x90, 0x01, 0x00]);
+        cpu.run();
+
+        assert_eq!(cpu.program_counter, 0x8004)
+    }
+
+    #[test]
+    fn inx_overflow() {
+        let mut cpu = CPU::new();
+        cpu.register_x = 0xff;
+        cpu.load(vec![0xE8, 0xE8, 0x00]);
+        cpu.run();
+
+        assert_eq!(cpu.register_x, 1)
     }
 }
 
